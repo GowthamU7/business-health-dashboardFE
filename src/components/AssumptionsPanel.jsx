@@ -15,7 +15,6 @@ function SliderRow({ label, techLabel, techExplain, field, min, max, step, displ
           <div style={{ width: 14, height: 14, borderRadius: "50%", border: "1px solid rgba(148,163,184,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, color: "#6b7280", flexShrink: 0, lineHeight: 1 }}>
             ?
           </div>
-
           {hovered && (
             <div style={{
               position: "absolute",
@@ -59,14 +58,14 @@ function AssumptionsPanel({ assumptions, onChange, result, isRefreshing }) {
     onChange({ ...assumptions, [field]: Number(value) });
   };
 
-  const baseScore = result?.score || 0;
   const g = assumptions.growth_rate_adjustment;
   const s = assumptions.owner_salary_adjustment;
   const c = assumptions.cost_structure_adjustment;
-  const delta = Math.round(g * 0.15 + (-s / 10000) * 0.5 + (-c) * 0.2);
-  const adjScore = Math.min(100, Math.max(0, baseScore + delta));
-  const diff = adjScore - baseScore;
-  const barColor = adjScore >= 80 ? "#1D9E75" : adjScore >= 65 ? "#EF9F27" : "#E24B4A";
+
+  // Use the real score from the backend result directly
+  const realScore = result?.score || 0;
+  const hasResult = realScore > 0;
+  const barColor = realScore >= 80 ? "#1D9E75" : realScore >= 65 ? "#EF9F27" : "#E24B4A";
 
   return (
     <div className="card">
@@ -106,11 +105,11 @@ function AssumptionsPanel({ assumptions, onChange, result, isRefreshing }) {
         />
       </div>
 
-      {baseScore > 0 && (
+      {hasResult && (
         <div style={{ marginTop: 4, paddingTop: 16, borderTop: "1px solid rgba(148,163,184,0.12)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
             <div style={{ fontSize: 11, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-              Adjusted health score
+              Health score
             </div>
             {isRefreshing && (
               <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "#60a5fa" }}>
@@ -121,6 +120,7 @@ function AssumptionsPanel({ assumptions, onChange, result, isRefreshing }) {
               </div>
             )}
           </div>
+
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
             <div style={{
               fontSize: 28,
@@ -129,29 +129,26 @@ function AssumptionsPanel({ assumptions, onChange, result, isRefreshing }) {
               lineHeight: 1,
               transition: "color 0.2s ease",
             }}>
-              {adjScore}
+              {realScore}
             </div>
-            {!isRefreshing && diff !== 0 && (
-              <div style={{ fontSize: 12, color: diff > 0 ? "#1D9E75" : "#EF9F27", fontWeight: 500 }}>
-                {diff > 0 ? "▲ +" : "▼ "}{Math.abs(diff)} pts
+            <div style={{ fontSize: 13, color: "#9ca3af" }}>/100</div>
+            {isRefreshing && (
+              <div style={{ fontSize: 11, color: "#4b5563", fontStyle: "italic", marginLeft: 4 }}>
+                updating...
               </div>
             )}
           </div>
+
           <div style={{ height: 6, background: "rgba(2,6,23,0.5)", borderRadius: 4, overflow: "hidden" }}>
             <div style={{
-              width: `${adjScore}%`,
+              width: `${realScore}%`,
               height: "100%",
               background: isRefreshing ? "#374151" : barColor,
               borderRadius: 4,
-              transition: "width 0.3s ease, background 0.3s ease",
+              transition: "width 0.4s ease, background 0.3s ease",
               opacity: isRefreshing ? 0.5 : 1,
             }} />
           </div>
-          {isRefreshing && (
-            <div style={{ fontSize: 11, color: "#4b5563", marginTop: 8, fontStyle: "italic" }}>
-              Updating score and insights...
-            </div>
-          )}
         </div>
       )}
     </div>
