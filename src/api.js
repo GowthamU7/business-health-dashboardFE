@@ -19,6 +19,6 @@ export const analyzeBusinessFile = async ({ file, assumptions }) => {
       "Content-Type": "multipart/form-data",
     },
   });
-
+  console.log(response.data);
   return response.data;
 };
