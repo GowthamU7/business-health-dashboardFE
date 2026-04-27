@@ -15,10 +15,12 @@ export const analyzeBusinessFile = async ({ file, assumptions }) => {
   formData.append("cost_structure_adjustment", assumptions.cost_structure_adjustment);
 
   const response = await axios.post(`${API_BASE}/analyze-file`, formData, {
+    
     headers: {
       "Content-Type": "multipart/form-data",
     },
   });
-
+  console.log(response.data)
   return response.data;
+  
 };
