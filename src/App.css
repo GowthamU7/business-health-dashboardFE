@@ -23,7 +23,7 @@
   .base,
   .framework,
   .vite {
-    inset-inline: 0;
+    inset-inline: 1;
     margin: 0 auto;
   }
 
